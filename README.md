@@ -57,10 +57,10 @@ Este proyecto universitario desarrolla una solución integral de software que ab
 
 ## 7. Instalación
 
-1. **Clonar o descargar el repositorio:**
+1. **Clonar el repositorio:**
    ```bash
-   git clone <URL_DEL_REPOSITORIO>
-   cd proyecto-encriptacion-primos
+   git clone https://github.com/FelipeM89/Parcial2.git
+   cd Parcial2
    ```
 
 2. **Crear y activar un entorno virtual (opcional pero recomendado):**
@@ -169,9 +169,9 @@ El proyecto implementa dos mecanismos claros y diferenciados:
    - Utiliza una cola thread-safe (`queue.Queue`) para transferir los paquetes JSON con una latencia configurable.
    - El Emisor y el Receptor no comparten variables de texto; el Emisor solo accede a la clave pública $(e, n)$ y el Receptor únicamente a la clave privada $(d, n)$.
 2. **Comunicación en Red mediante Sockets TCP (`ServidorReceptorTCP` y `ClienteEmisorTCP`):**
-   - El Receptor abre un socket servidor TCP en `127.0.0.1:65432`.
-   - El Emisor se conecta a través del socket de red, transmite la trama binaria con la longitud del mensaje y el payload JSON, y espera una confirmación `ACK`.
-   - Permite separar físicamente al emisor y al receptor en dos procesos o computadores diferentes en una misma red.
+   - El Receptor abre un socket servidor TCP en la dirección local de loopback `127.0.0.1:65432`.
+   - La transmisión se realiza entre procesos diferenciados dentro del mismo computador (o en red local si se configura la IP correspondiente).
+   - El Emisor se conecta a través del socket de red, transmite la trama con la longitud y el payload JSON, y recibe confirmación `ACK`.
 
 ---
 
