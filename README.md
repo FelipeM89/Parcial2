@@ -1,7 +1,6 @@
 # Diseño e Implementación de una Máquina para Encriptar Mensajes Usando Números Primos Grandes
 
-## 1. Nombre del proyecto
-**Máquina Criptográfica RSA Educativa basada en Generación de Números Primos Grandes de 40 Cifras.**
+
 
 ---
 
