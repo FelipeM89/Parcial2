@@ -1,0 +1,8 @@
+# Dependencias del proyecto
+# Nota: La aplicación principal, la criptografía RSA, los generadores pseudoaleatorios,
+# los sockets de red y la interfaz gráfica Tkinter están desarrollados íntegramente
+# con la biblioteca estándar de Python (3.8 o superior), por lo que NO requieren
+# librerías externas obligatorias para su funcionamiento normal.
+
+# Dependencias opcionales recomendadas para desarrollo y testing:
+pytest>=7.4.0
