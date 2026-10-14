@@ -456,8 +456,18 @@ class AplicacionCripto(tk.Tk):
 
         ttk.Label(top_bar, text="Modo de Envío:").pack(side=tk.LEFT, padx=5)
         self.var_modo_envio = tk.StringVar(value="simulacion")
-        ttk.Radiobutton(top_bar, text="Simulación Local en Memoria (Canal Desacoplado)", variable=self.var_modo_envio, value="simulacion").pack(side=tk.LEFT, padx=10)
-        ttk.Radiobutton(top_bar, text="Red Real Sockets TCP (127.0.0.1)", variable=self.var_modo_envio, value="socket").pack(side=tk.LEFT, padx=10)
+        ttk.Radiobutton(top_bar, text="Simulación Local (1 PC)", variable=self.var_modo_envio, value="simulacion").pack(side=tk.LEFT, padx=6)
+        ttk.Radiobutton(top_bar, text="Sockets TCP (Red / 2 PCs)", variable=self.var_modo_envio, value="socket").pack(side=tk.LEFT, padx=6)
+
+        ttk.Label(top_bar, text="IP Destino:").pack(side=tk.LEFT, padx=(12, 2))
+        self.entry_ip = ttk.Entry(top_bar, width=15)
+        self.entry_ip.insert(0, "127.0.0.1")
+        self.entry_ip.pack(side=tk.LEFT, padx=2)
+
+        ttk.Label(top_bar, text="Puerto:").pack(side=tk.LEFT, padx=(8, 2))
+        self.entry_puerto = ttk.Entry(top_bar, width=7)
+        self.entry_puerto.insert(0, "65432")
+        self.entry_puerto.pack(side=tk.LEFT, padx=2)
 
         # Panel de dos columnas: Emisor y Receptor
         paneles = ttk.PanedWindow(frame, orient=tk.HORIZONTAL)
@@ -561,23 +571,35 @@ class AplicacionCripto(tk.Tk):
                 messagebox.showerror("Error en envío simulado", str(err))
 
         elif modo == "socket":
-            # Iniciar servidor TCP en el receptor si no está corriendo
+            ip_destino = self.entry_ip.get().strip() or "127.0.0.1"
+            try:
+                puerto = int(self.entry_puerto.get().strip() or "65432")
+            except ValueError:
+                puerto = 65432
+
+            # Iniciar servidor TCP en el receptor si no está corriendo (escucha en 0.0.0.0 para aceptar red local)
             if not self.receptor.servidor_tcp_activo:
-                self.receptor.iniciar_servidor_tcp(host="127.0.0.1", puerto=self.puerto_tcp)
+                def _al_recibir(payload):
+                    self.txt_receptor_cifrado.delete("1.0", tk.END)
+                    bloques = payload.get("bloques", [])
+                    bloques_str = "\n".join(f"Bloque {i+1}: {b}" for i, b in enumerate(bloques))
+                    self.txt_receptor_cifrado.insert(tk.END, bloques_str)
+
+                self.receptor.iniciar_servidor_tcp(host="0.0.0.0", puerto=puerto, callback_mensaje_recibido=_al_recibir)
                 time.sleep(0.1)
 
             try:
-                ack = self.emisor.enviar_por_socket_tcp(host="127.0.0.1", puerto=self.puerto_tcp)
+                ack = self.emisor.enviar_por_socket_tcp(host=ip_destino, puerto=puerto)
                 payload = self.receptor.ultimo_payload_recibido
                 if payload:
                     self.txt_receptor_cifrado.delete("1.0", tk.END)
                     bloques_str = "\n".join(f"Bloque {i+1}: {b}" for i, b in enumerate(payload["bloques"]))
                     self.txt_receptor_cifrado.insert(tk.END, bloques_str)
 
-                self.lbl_emisor_estado.config(text=f"Enviado por socket TCP (127.0.0.1:{self.puerto_tcp}) - {ack}")
-                messagebox.showinfo("Envío TCP Exitoso", f"Mensaje transmitido por red local TCP.\nRespuesta del Receptor: {ack}")
+                self.lbl_emisor_estado.config(text=f"Enviado por socket TCP ({ip_destino}:{puerto}) - {ack}")
+                messagebox.showinfo("Envío TCP Exitoso", f"Mensaje transmitido por red a {ip_destino}:{puerto}.\nRespuesta del Receptor: {ack}")
             except Exception as err:
-                messagebox.showerror("Error en socket TCP", f"No se pudo conectar al socket receptor:\n{err}")
+                messagebox.showerror("Error en socket TCP", f"No se pudo conectar a {ip_destino}:{puerto}:\n{err}")
 
     def _receptor_descifrar(self):
         if not self.receptor or not self.receptor.ultimo_payload_recibido:
