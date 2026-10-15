@@ -1,2 +1,3 @@
 # Dependencias (el proyecto funciona con la biblioteca estándar de Python 3.8+)
 pytest>=7.4.0
+matplotlib>=3.5  # solo para: python main.py --analisis

@@ -7,6 +7,7 @@ Uso:
   python main.py --cli     -> Ejecuta una demostración académica interactiva completa por terminal
   python main.py --test    -> Ejecuta la suite de pruebas unitarias automatizadas
   python main.py --gen     -> Ejecuta la generación académica de 10.000 números de 40 cifras y guarda el CSV
+  python main.py --analisis -> Ejecuta el análisis del cifrado y genera las gráficas del informe (requiere matplotlib)
 """
 
 import sys
@@ -155,6 +156,15 @@ def ejecutar_generacion_masiva():
         print(f"[OK] {len(primos)} primos encontrados de 10.000 generados ({t:.2f} s). Guardado en {ruta}")
 
 
+def ejecutar_analisis():
+    """Ejecuta los experimentos de análisis y guarda las gráficas en informe/figuras."""
+    print("=" * 70)
+    print("ANALISIS EXPERIMENTAL DEL CIFRADO RSA")
+    print("=" * 70)
+    from src.graficas import generar_todo
+    generar_todo()
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Máquina Criptográfica RSA con Números Primos Grandes (40 Cifras)"
@@ -162,6 +172,7 @@ def main():
     parser.add_argument("--cli", action="store_true", help="Ejecutar demostración por terminal en consola")
     parser.add_argument("--test", action="store_true", help="Ejecutar pruebas unitarias automatizadas")
     parser.add_argument("--gen", action="store_true", help="Generar los 10.000 números de 40 cifras y guardar CSV")
+    parser.add_argument("--analisis", action="store_true", help="Generar las gráficas del análisis del cifrado")
     parser.add_argument("--gui", action="store_true", help="Iniciar la interfaz gráfica de usuario (por defecto)")
 
     args = parser.parse_args()
@@ -170,6 +181,8 @@ def main():
         ejecutar_pruebas()
     elif args.gen:
         ejecutar_generacion_masiva()
+    elif args.analisis:
+        ejecutar_analisis()
     elif args.cli:
         ejecutar_demostracion_cli()
     else:
