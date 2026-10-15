@@ -1,5 +1,5 @@
 """
-Módulo del Sistema Criptográfico Educativo RSA con Primos Grandes.
+Módulo del Sistema Criptográfico RSA con Primos Grandes.
 
 Implementación pedagógica y matemáticamente rigurosa de RSA:
 1. Validación estricta de condiciones matemáticas: p != q, p y q primos, p > 1, q > 1.
